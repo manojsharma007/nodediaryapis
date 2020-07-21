@@ -14,7 +14,7 @@ const mysql = require('mysql2');
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    database: 'manojksh_sub'
+    database: 'manojksh'
 });
 var userArray = [];
 connection.query(
@@ -116,8 +116,6 @@ app.post('/api/getJournal', function (req, res) {
 })
 
 app.get('/api/getempolyeesbyId/:id', function (req, res) {
-
-    // console.log(req.params.id);
     userService.getempolyeesbyId(req.params.id)
         .then(emp => res.json(emp))
         .catch(err => next(err));
@@ -138,4 +136,11 @@ app.post('/api/deleteJournal', function (req, res) {
     userService.deleteJournal(req)
         .then(journal => res.json(journal))
         .catch(err => next(err));
+})
+
+app.get('/api/records', function (req, res) {
+    userService.records()
+        .then(emp => res.json(emp))
+        .catch(err => next(err));
+
 })
