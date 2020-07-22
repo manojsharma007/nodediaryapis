@@ -8,21 +8,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(bodyParser.raw());
 
-const mysql = require('mysql2');
 
-// create the connection to database
-const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    database: 'manojksh'
-});
-var userArray = [];
-connection.query(
-    'SELECT * FROM diary_users',
-    function (err, results, fields) {
-        userArray = results;
-    }
-);
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Authorization");
@@ -31,6 +17,9 @@ app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Credentials", "true");
     next();
 });
+
+// User login section start here 
+
 function findUser(array, username, password) {
     for (var i = 0; i < array.length; i++) {
         if (array[i].username == username && array[i].password == password) {
@@ -39,7 +28,7 @@ function findUser(array, username, password) {
     }
     return null;
 }
-const users = userArray;
+
 app.get('/api', function (req, res) {
     res.json({
         text: 'my api!'
@@ -100,6 +89,8 @@ app.get('/api/destroytoken', function (req, res) {
 
 })
 
+// User login section end here 
+
 app.listen(3000, function () {
     console.log('App listening on port 3000 !');
 });
@@ -108,25 +99,12 @@ app.get('/api/allJournal', function (req, res) {
     userService.allJournal()
         .then(journal => res.json(journal))
         .catch(err => next(err));
-})
-app.post('/api/getJournal', function (req, res) {
-    userService.getJournal(req)
-        .then(journal => res.json(journal))
-        .catch(err => next(err));
-})
-
-app.get('/api/getempolyeesbyId/:id', function (req, res) {
-    userService.getempolyeesbyId(req.params.id)
-        .then(emp => res.json(emp))
-        .catch(err => next(err));
-
-})
+});
 app.post('/api/addJournal', function (req, res) {
     userService.addJournal(req)
         .then(journal => res.json(journal))
-        .catch(err => next(err));
-
-})
+        .catch(err => next(err.message));
+});
 app.post('/api/updateJournal', function (req, res) {
     userService.updateJournal(req)
         .then(journal => res.json(journal))
@@ -138,9 +116,3 @@ app.post('/api/deleteJournal', function (req, res) {
         .catch(err => next(err));
 })
 
-app.get('/api/records', function (req, res) {
-    userService.records()
-        .then(emp => res.json(emp))
-        .catch(err => next(err));
-
-})
