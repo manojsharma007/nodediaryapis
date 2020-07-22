@@ -29,15 +29,26 @@ async function getJournal(req, res) {
 };
 async function allJournal(req, res) {
   const promisePool = connection.promise();
-  const[rows , fields] = await promisePool.query("select * from diary_journal_test ORDER BY id DESC");
-  return rows
+  let result={
+    "totalsrecords":0,
+    "weekly":0,
+    "monthly":0,
+    "data":[]
+  };
+  const totalsrecords = await promisePool.query("select Count(*) as Total from diary_journal_test ORDER BY createddate DESC");
+    const monthlyrecords = await promisePool.query("select Count(*) as Total from diary_journal_test  WHERE MONTH(createddate) = MONTH(CURRENT_DATE()) AND YEAR(createddate) = YEAR(CURRENT_DATE())");
+    const weeklyrecords = await promisePool.query("select Count(*) as Total from diary_journal_test  WHERE YEARWEEK(createddate) = YEARWEEK(NOW())");
+  const[rowsData] = await promisePool.query("select * from diary_journal_test ORDER BY id DESC");
+   result.totalsrecords= totalsrecords[0][0].Total;
+   result.weekly= weeklyrecords[0][0].Total;
+   result.monthly= monthlyrecords[0][0].Total;
+   result.data=rowsData;
+  return result;
 };
 async function addJournal(req, res) {
   const promisePool = connection.promise();
-  let query = "INSERT INTO diary_journal_test (textitem, submitdate ) VALUES ('" + req.body.textitem + "','" + req.body.date + "')";
-  await connection.execute(query);
-  const[rows , fields] = await promisePool.query("select * from diary_journal_test ORDER BY id DESC LIMIT 0,20");
-  return rows
+  let query = await promisePool.query("INSERT INTO diary_journal_test (textitem, submitdate ) VALUES ('" + req.body.textitem + "','" + req.body.date + "')");
+  return query;
 };
 async function records(req, res) {
   let result={
@@ -51,7 +62,7 @@ async function records(req, res) {
     const weeklyrecords = await promisePool.query("select Count(*) as Total from diary_journal_test  WHERE YEARWEEK(createddate) = YEARWEEK(NOW())");
    result.totalsrecords= totalsrecords[0][0].Total;
    result.weekly= weeklyrecords[0][0].Total;
-   result.monthly= monthlyrecords[0][0].Total
+   result.monthly= monthlyrecords[0][0].Total;
   return result
 };
 async function updateJournal(req, res) {
@@ -80,7 +91,7 @@ async function deleteJournal(req, res) {
   const promisePool = connection.promise();
    let querydelete= "DELETE FROM diary_journal_test  WHERE id =  " + req.body.id ;
   await connection.execute(querydelete);
-  const[rows , fields] = await promisePool.query("select * from diary_journal_test ORDER BY id DESC");
+  const[rows , fields] = await promisePool.query("select * from diary_journal_test ORDER BY id DESC LIMIT 0,20");
   return rows
 };
 
