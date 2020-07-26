@@ -16,13 +16,10 @@ class Journal{
     public function __construct($connection){
         $this->connection = $connection;
     }
-
-    //R
     public function read(){
         $query = "SELECT * FROM " . $this->table_name . " ORDER BY id DESC";
         $stmt = $this->connection->prepare($query);
         $stmt->execute();
-
         return $stmt;
     }
     public function create(){
@@ -44,19 +41,12 @@ class Journal{
        return $stmt;
     }
     public function monthty(){
-
-
-  //    const totalsrecords = await connection.execute("select Count(*) as Total from " + tableName + " ORDER BY createddate DESC");
-//  const monthlyrecords = await connection.execute("select Count(*) as Total from " + tableName + "  WHERE MONTH(createddate) = MONTH(CURRENT_DATE()) AND YEAR(createddate) = YEAR(CURRENT_DATE())");
-  //const weeklyrecords = await connection.execute("select Count(*) as Total from " + tableName + "  WHERE YEARWEEK(createddate) = YEARWEEK(NOW())");
-
-        $query = "SELECT * FROM " . $this->table_name . "  WHERE MONTH(createddate) = MONTH(CURRENT_DATE()) AND YEAR(createddate) = YEAR(CURRENT_DATE()) ";
+    $query = "SELECT * FROM " . $this->table_name . "  WHERE MONTH(createddate) = MONTH(CURRENT_DATE()) AND YEAR(createddate) = YEAR(CURRENT_DATE()) ";
         $stmt = $this->connection->prepare($query);
         $stmt->execute();
         return $stmt;
     }
     public function week(){
-
         $query = "SELECT * FROM " . $this->table_name . "  WHERE YEARWEEK(createddate) = YEARWEEK(NOW())";
         $stmt = $this->connection->prepare($query);
         $stmt->execute();
