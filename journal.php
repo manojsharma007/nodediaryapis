@@ -52,6 +52,17 @@ class Journal{
         $stmt->execute();
         return $stmt;
     }
+    public function chartYearly(){
+        $query = "select month(createddate) as Month, count(*) as Total from  " . $this->table_name . " WHERE year(createddate) = YEAR(CURDATE()) group by month(createddate)";
+        $stmt = $this->connection->prepare($query);
+       $stmt->execute();
+       while($row = $stmt->fetch(PDO::FETCH_ASSOC))
+       {
+        $data[] = $row;
+       }
+        echo json_encode($data);
+      return $data;
+    }
   }
 
 ?>
